@@ -12,16 +12,16 @@
 #define DT3 3           // Coffee making process duration
 #define DT4 5           // Max time to remove coffee
 
-enum STATE {
+typedef enum STATE {
   STAND_BY,
   ON,
   READY,
   MAKING_COFFEE,
   MAINTENANCE
-};
+} State_t;
 
 typedef struct GV {
-  enum STATE state;
+  State_t state;
   bool pir_present;
   bool hc_in_range;
   bool time_elapsed; // flag?

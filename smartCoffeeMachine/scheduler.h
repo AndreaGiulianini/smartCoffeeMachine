@@ -1,16 +1,19 @@
 #ifndef __SCHEDULER__
 #define __SCHEDULER__
 
-#include "LinkedList.h"
+#include "globalvar.h"
 #include "itask.h"
+#include "LinkedList.h"
 
 class Scheduler {
+
+  private:
+
+    LinkedList< ITask* > tasks;
 
   public:
 
     Scheduler();
-
-    void SetPeriod( unsigned int period );
 
     void AttachTask( ITask* task );
 

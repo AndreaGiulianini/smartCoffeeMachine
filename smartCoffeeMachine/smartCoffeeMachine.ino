@@ -4,7 +4,7 @@
 #include "timer.h"
 #include "presencereader.h"
 
-#define BAUD_RATE 9600
+#define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
 
 void setup() {
   Serial.begin( BAUD_RATE );
@@ -20,7 +20,6 @@ void setup() {
   };
   
   Scheduler s = Scheduler();
-  s.SetPeriod( 1000 );
   s.AttachTask( new StateSwitcher( &gv ) );
   s.AttachTask( new Timer( &gv ) );
   s.AttachTask( new PresenceReader( &gv ) );

@@ -6,6 +6,7 @@ Timer::Timer( GlobalVar_t* gv ) {
 }
 
 void Timer::Exec() {
+  Serial.println("exec timer");
   void CheckTimerReset();
   // ON to STAND BY
   StartTimer( gv->state == ON && !gv->pir_present, DT2b );

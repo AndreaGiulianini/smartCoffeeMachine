@@ -1,5 +1,4 @@
 #include "stateswitcher.h"
-#include "Arduino.h"
 
 StateSwitcher::StateSwitcher( GlobalVar_t* gv ) {
   this->gv = gv;
