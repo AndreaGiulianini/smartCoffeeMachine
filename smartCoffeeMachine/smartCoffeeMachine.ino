@@ -4,7 +4,11 @@
 #include "timer.h"
 #include "presencereader.h"
 
+#define BAUD_RATE 9600
+
 void setup() {
+  Serial.begin( BAUD_RATE );
+  
   GlobalVar_t gv {
     .state = STAND_BY,
     .pir_present = false,
@@ -20,7 +24,7 @@ void setup() {
   s.AttachTask( new StateSwitcher( &gv ) );
   s.AttachTask( new Timer( &gv ) );
   s.AttachTask( new PresenceReader( &gv ) );
-  s.Start();
+  s.StartSchedule();
 }
 
 void loop() {

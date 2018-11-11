@@ -21,7 +21,7 @@ void Scheduler::SetPeriod( unsigned int period ) {
   sei();
 }
 
-void Scheduler::Start( bool _start ) {
+void Scheduler::StartSchedule( bool _start ) {
   while( true )
   // if pir -> attiva timer + intrpt
     Sleep();

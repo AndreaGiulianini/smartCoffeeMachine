@@ -7,29 +7,22 @@ Timer::Timer( GlobalVar_t* gv ) {
 
 void Timer::Exec() {
   void CheckTimerReset();
-  void OnToStdb();
+  // ON to STAND BY
+  StartTimer( gv->state == ON && !gv->pir_present, DT2b );
   void CheckTimerReset();
-  void OnToReady();
+  // ON to READY
+  StartTimer( gv->state == ON && gv->hc_in_range, DT1 );
   void CheckTimerReset();
-  void ReadyToOn();
+  // READY to ON
+  StartTimer( gv->state == READY && !gv->hc_in_range, DT2a );
 }
 
 void Timer::CheckTimerReset() {
-  if ( gv->state == ON && ( gv->time_elapsed || ( gv->pir_present && !gv->hc_in_range ) )
-    || gv->state == READY && ( gv->time_elapsed || gv->pir_present ) )
+  //if ( gv->state == ON && ( gv->time_elapsed || ( gv->pir_present && !gv->hc_in_range ) )
+  //  || gv->state == READY && ( gv->time_elapsed || gv->pir_present ) )
+  if ( ( gv->state == ON && gv->pir_present && !gv->hc_in_range )
+    || ( gv->state == READY && gv->pir_present ) )
     timer_started = false;
-}
-
-void Timer::OnToStdb() {
-  StartTimer( gv->state == ON && !gv->pir_present, DT2b );
-}
-
-void Timer::OnToReady() {
-  StartTimer( gv->state == ON && gv->hc_in_range, DT1 );
-}
-
-void Timer::ReadyToOn() {
-  StartTimer( gv->state == READY && !gv->hc_in_range, DT2a );
 }
 
 void Timer::StartTimer( bool condition, unsigned long time_to_reach ) {

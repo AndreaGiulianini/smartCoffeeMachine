@@ -47,6 +47,9 @@ void StateSwitcher::Exec() {
   if ( gv->state == MAKING_COFFEE && gv->coffee_ready && gv->coffee_pods != 0 )
     gv->state = STAND_BY;
 
+  /*
+   * 
+   */
   if ( gv->state == MAKING_COFFEE && gv->coffee_ready && gv->coffee_pods == 0 )
     gv->state = MAINTENANCE;
 }

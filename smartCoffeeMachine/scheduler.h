@@ -16,7 +16,7 @@ class Scheduler {
 
     void DetachTask( ITask* task );
 
-    void Start( bool _true = true);
+    void StartSchedule( bool _true = true);
 
   private:
 

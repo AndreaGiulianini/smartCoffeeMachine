@@ -24,12 +24,6 @@ class Timer : public ITask {
     
     void CheckTimerReset();
 
-    void OnToStdb();
-
-    void OnToReady();
-
-    void ReadyToOn();
-
     void StartTimer( bool condition, unsigned long time_to_reach );
   
 };
