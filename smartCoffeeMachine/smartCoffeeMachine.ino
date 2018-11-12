@@ -8,6 +8,8 @@
 
 void setup() {
   Serial.begin( BAUD_RATE );
+  pinMode(SP_TRIG_PIN, OUTPUT);
+  pinMode(SP_ECHO_PIN, INPUT);
   
   GlobalVar_t gv {
     .state = STAND_BY,
@@ -29,4 +31,3 @@ void setup() {
 void loop() {
 }
 
-// interrupt del pir esce da sleep e fa partire scheduler
