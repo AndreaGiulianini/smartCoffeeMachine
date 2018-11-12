@@ -23,11 +23,6 @@ void Scheduler::StartSchedule( bool _start ) {
   while( _start ) {
   // if pir -> attiva timer + intrpt
     Sleep();
-    if ( tasks.size() > 0 ) {
-      if ( i >= tasks.size() )
-        i = 0;
-      tasks.get( i++ )->Exec();
-    }
   }
 }
 
@@ -54,4 +49,9 @@ void Scheduler::Sleep() {
 // watchdog interrupt
 ISR (WDT_vect) {
   wdt_disable();
+  if ( tasks.size() > 0 ) {
+    if ( i >= tasks.size() )
+      i = 0;
+    tasks.get( i++ )->Exec();
+  }
 }
