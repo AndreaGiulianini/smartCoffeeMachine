@@ -23,6 +23,11 @@ void Scheduler::StartSchedule( bool _start ) {
   while( _start ) {
   // if pir -> attiva timer + intrpt
     Sleep();
+    if ( tasks.size() > 0 ) {
+      if ( i >= tasks.size() )
+        i = 0;
+      tasks.get( i++ )->Exec();
+    }
   }
 }
 
@@ -31,7 +36,7 @@ void Scheduler::Sleep() {
 
   MCUSR = 0;                          // reset various flags
   WDTCSR |= 0b00011000;               // see docs, set WDCE, WDE
-  WDTCSR =  0b01000000 | WDTO_120MS;    // set WDIE, and appropriate delay
+  WDTCSR =  0b01000000 | WDTO_1S;    // set WDIE, and appropriate delay
   wdt_reset();
   
   byte adcsra_save = ADCSRA;
@@ -49,9 +54,4 @@ void Scheduler::Sleep() {
 // watchdog interrupt
 ISR (WDT_vect) {
   wdt_disable();
-  if ( tasks.size() > 0 ) {
-    if ( i >= tasks.size() )
-      i = 0;
-    tasks.get( i++ )->Exec();
-  }
 }
