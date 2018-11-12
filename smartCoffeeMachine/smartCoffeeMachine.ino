@@ -1,32 +1,32 @@
-#include "definition.h"     // enum, struct, ...
-#include "state_task.h"
-#include "presence_task.h"
-#include "distance_task.h"
-#include "timer_task.h"
-#include "comunication_task.h"
+#include "globalvar.h"
+#include "scheduler.h"
+#include "stateswitcher.h"
+#include "timer.h"
+#include "presencereader.h"
 
-typedef enum STATE {
-  STAND_BY,
-  ON,
-  READY,
-  MAINTENANCE,
-  MAKING_COFFEE
-} State_t * variables;
-
-struct VARIABLES {
-  State_t state;
-  bool pir_present;
-  bool hc_in_range;
-  unsigned long time_elapsed;
-  int coffee_pods;
-}
+#define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
 
 void setup() {
-  // put your setup code here, to run once:
-
+  Serial.begin( BAUD_RATE );
+  
+  GlobalVar_t gv {
+    .state = STAND_BY,
+    .pir_present = false,
+    .hc_in_range = false,
+    .time_elapsed = false,
+    .make_coffee = false,
+    .coffee_ready = false,
+    .coffee_pods = NMAX_CAFFEE
+  };
+  
+  Scheduler s = Scheduler();
+  s.AttachTask( new StateSwitcher( &gv ) );
+  s.AttachTask( new Timer( &gv ) );
+  s.AttachTask( new PresenceReader( &gv ) );
+  s.StartSchedule();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
 }
+
+// interrupt del pir esce da sleep e fa partire scheduler
