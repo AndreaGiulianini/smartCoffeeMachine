@@ -37,9 +37,9 @@ public:
   Msg* receiveMsg(Pattern& pattern);
   
   void sendMsg(const String& msg);
+  
 };
 
 extern MsgServiceClass MsgService;
 
 #endif
-

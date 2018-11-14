@@ -9,8 +9,8 @@ class Coffee : public ITask {
   private:
 
     GlobalVar_t* gv;
-    bool btn_pressed;
     
+    bool btn_pressed;
 
   public:
 
