@@ -6,7 +6,7 @@ Distance::Distance( GlobalVar_t* gv ) {
 }
 
 void Distance::Exec() {
-  Serial.println(GetDistance());
+  Serial.println("ex distance");
   /*if ( gv->state == ON && GetDistance() <= DIST1 )//Per passare a READY
     gv->hc_in_range = true;
   else if ( gv->state == TAKING_COFFEE && GetDistance() <= DIST2 )//Per prendere caffè

@@ -1,11 +1,9 @@
 #include "timer.h"
 #include "Arduino.h"
-#include "scheduler.h"
 
-extern int wdt_call_cicle;
-
-Timer::Timer( GlobalVar_t* gv ) {
+Timer::Timer( GlobalVar_t* gv, Scheduler* scheduler ) {
   this->gv = gv;
+  this->scheduler = scheduler;
 }
 
 void Timer::Exec() {
@@ -31,9 +29,9 @@ void Timer::StartTimer( bool condition, unsigned long time_to_reach ) {
   if ( condition ) {
     if ( !timer_started ) {
       timer_started = true;
-      initial_time = wdt_call_cicle / 4;
+      initial_time = scheduler->GetTime();
     }
-    if ( ( wdt_call_cicle / 4 ) - initial_time > time_to_reach && gv->time_acquired ) {
+    if ( scheduler->GetTime() - initial_time > time_to_reach && gv->time_acquired ) {
       gv->time_elapsed = true;
       gv->time_acquired = false;
     } else

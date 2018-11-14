@@ -7,5 +7,6 @@ PresenceReader::PresenceReader( GlobalVar_t* gv ) {
 }
 
 void PresenceReader::Exec() {
+  Serial.println("ex presence");
   gv->pir_present = digitalRead( PIR_PIN ) == HIGH;
 }

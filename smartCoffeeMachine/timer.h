@@ -3,6 +3,7 @@
 
 #include "globalvar.h"
 #include "itask.h"
+#include "scheduler.h"
 
 class Timer : public ITask {
 
@@ -10,13 +11,15 @@ class Timer : public ITask {
 
     GlobalVar_t* gv;
 
+    Scheduler* scheduler;
+
     bool timer_started;
 
     unsigned long initial_time;
 
   public:
 
-    Timer( GlobalVar_t* gv );
+    Timer( GlobalVar_t* gv, Scheduler* scheduler );
 
     void Exec() override;
 

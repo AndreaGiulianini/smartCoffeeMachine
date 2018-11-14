@@ -7,6 +7,7 @@ StateSwitcher::StateSwitcher( GlobalVar_t* gv ) {
 }
 
 void StateSwitcher::Exec() {
+  Serial.println("ex stete");
   /*
    * [...] Quando viene rilevata la presenza di qualcuno nelle vicinanze allora 
    * esce dalla modalità di risparmio, entrando in una modalità ON.
@@ -29,10 +30,10 @@ void StateSwitcher::Exec() {
    * Se viene rilevato qualcuno  ad una distanza inferiore a DIST1 cm per un certo 
    * numero DT1 secondi [...]e la macchina entra in una modalità READY.
    */
-  Serial.print("Range: ");
+  /*Serial.print("Range: ");
   Serial.println(gv->hc_in_range);
   Serial.print("Time: ");
-  Serial.println(gv->time_elapsed);
+  Serial.println(gv->time_elapsed);*/
   if ( gv->state == ON && gv->time_elapsed && !gv->time_acquired && gv->hc_in_range ) {
     gv->state = READY;
     gv->time_acquired = true;

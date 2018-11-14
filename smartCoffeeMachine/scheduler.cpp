@@ -4,58 +4,92 @@
 #include "avr/wdt.h"
 #include "Arduino.h"
 
-int wdt_call_cicle;
+#include <util/atomic.h>
 
 Scheduler::Scheduler() {
-  tasks = LinkedList< ITask* >();
-  wdt_call_cicle = 0;
+  tasks = ( TaskData_t** )malloc( IN_SIZE * sizeof( TaskData_t* ) );
+  vect_size = IN_SIZE;
+  vect_elem = 0;
+  wdt_call_count = 0;
 }
 
-void Scheduler::AttachTask( ITask* task ) {
-  tasks.add( task );
+void Scheduler::AttachTask( ITask* task, unsigned long period ) {
+  TaskData_t* td = new TaskData_t { task, period, 0 };
+  if ( ++vect_elem >= vect_size )
+    tasks = ( TaskData_t** )realloc( tasks, ++vect_size * sizeof( TaskData_t* ) );
+  tasks[ vect_elem ] = td;
 }
 
 void Scheduler::DetachTask( ITask* task ) {
-  for ( int i = 0; i < tasks.size(); i++ )
-    if ( task == tasks.get( i ) )
-      tasks.remove( i );
+  for ( int i = 0; i < vect_elem; i++ )
+    if ( task == tasks[ i ]->task )
+      tasks[ i ] = nullptr;
 }
 
 void Scheduler::StartSchedule( bool _start ) {
-  int i = 0;
   while( _start ) {
-  // if pir -> attiva timer + intrpt
+    // if pir -> attiva timer + intrpt
     Sleep();
-    if ( tasks.size() > 0 ) {
-      if ( i >= tasks.size() )
-        i = 0;
-      tasks.get( i++ )->Exec();
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+      for ( int i = 0; i < vect_elem; i++ ) {
+        TaskData_t* td = tasks[ i ];
+        if ( td != nullptr && td->period - ( ( micros() - wakeup_time ) / 1000 + wdt_call_count * 250 ) ) {
+          td->last_exec = wdt_call_count * 250 + ( micros() - wakeup_time ) / 1000 ;
+          td->task->Exec();
+        }
+      }
     }
   }
 }
 
-void Scheduler::Sleep() { 
-  noInterrupts ();   // timed sequence below
-
-  MCUSR = 0;                          // reset various flags
-  WDTCSR |= 0b00011000;               // see docs, set WDCE, WDE
-  WDTCSR =  0b01000000 | WDTO_250MS;    // set WDIE, and appropriate delay
-  wdt_reset();
-  
-  byte adcsra_save = ADCSRA;
-  ADCSRA = 0;  // disable ADC
-  power_all_disable ();   // turn off all modules
-  set_sleep_mode (SLEEP_MODE_PWR_DOWN);   // sleep mode is set here
-  sleep_enable();
-  interrupts ();
-  sleep_cpu ();            // now goes to Sleep and waits for the interrupt
-
-  ADCSRA = adcsra_save;  // stop power reduction
-  power_all_enable ();   // turn on all modules
+long Scheduler::GetTime() {
+  return wdt_call_count * 250 + millis() - wakeup_time;
 }
 
-// watchdog interrupt
+void Scheduler::Sleep() { 
+  cli();                                                               // no interrupts
+
+  MCUSR = 0x00;                         /* The MCU Status Register provides information 
+                                         * on which reset source caused an MCU reset:
+                                         * - Power-on Reset Flag            ( BIT0 )  ;
+                                         * - External Reset Flag            ( BIT1 )  ;
+                                         * - Brown-out Reset Flag           ( BIT2 )  ;
+                                         * - Watchdog System Reset Flag     ( BIT3 );*/
+                                   
+  WDTCSR = (1 << WDCE) | (1 << WDE);  /* "Explain" that WDE has to be set before change 
+        the WDT prescaler: http://forum.arduino.cc/index.php?topic=48626.0#msg347960 */
+
+  /* WDTCSR – Watchdog Timer Control Register:
+   * - WDIF: Watchdog Interrupt Flag: 
+   *   This bit is set when a time-out occurs in the Watchdog Timer and the Watchdog 
+   *   Timer is configured for interrupt. WDIF is cleared by hardware when executing the 
+   *   corresponding interrupt handling vector
+   * - WDIE: Watchdog Interrupt Enable:
+   *   Used to set ( in combination with WDE ) wdt timeout mode ( none, interrupt, reset, 
+   *   interrupt + reset )
+   * - WDCE: Watchdog Change Enable:
+   *   This bit is used in timed sequences for changing WDE and prescaler bits. To clear 
+   *   the WDE bit, and/or change the prescaler bits, WDCE must be set.
+   * - WDE: Watchdog System Reset Enable
+   *   Used to set ( in combination with WDIE ) wdt timeout mode ( none, interrupt, re-
+   *   set, interrupt + reset )
+   * - WDP[3:0]: Watchdog Timer Prescaler 3, 2, 1 and 0
+   */
+  WDTCSR = (0 << WDIF) | (1 << WDIE) | (1 << WDP3) | (1 << WDCE) 
+           | (1 << WDE) | (0 << WDP2) | (0 << WDP1) | (0 << WDP0);
+           
+  WDTCSR &= ~(1 << WDE);                                       /* set the WDE pin to 0: 
+                                      1 << WDE = 0b00001000 -> ~ = NOT -> 0b11110111 */
+  
+  set_sleep_mode (SLEEP_MODE_PWR_DOWN);   // sleep mode is set here
+  sei();  // interrupts
+  sleep_enable();
+  sleep_cpu ();            // now goes to sleep and waits for the interrupt
+  
+  wakeup_time = micros();
+  wdt_call_count++;
+}
+
 ISR (WDT_vect) {
-  wdt_disable();
-  wdt_call_cicle++;
+  WDTCSR = 0x00;      // reset all
 }
