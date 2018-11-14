@@ -3,6 +3,7 @@
 
 #include "globalvar.h"
 #include "itask.h"
+#include "LinkedList.h"
 
 #define DEFAULT_PERIOD 50
 #define IN_SIZE 10
@@ -17,11 +18,7 @@ class Scheduler {
 
   private:
 
-    TaskData_t** tasks;
-
-    int vect_size;
-
-    int vect_elem;
+    LinkedList< TaskData_t* > tasks;
 
     unsigned long wakeup_time;
 

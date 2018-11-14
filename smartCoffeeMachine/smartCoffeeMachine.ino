@@ -23,7 +23,7 @@ void setup() {
     .coffee_ready = false,
     .coffee_pods = NMAX_CAFFEE
   };
-  Serial.println("setup");
+
   s = Scheduler();
   s.AttachTask( new StateSwitcher( &gv ) );
   s.AttachTask( new Timer( &gv, &s ) );
@@ -32,6 +32,4 @@ void setup() {
   s.StartSchedule();
 }
 
-void loop() {
-  //s.StartSchedule();
-}
+void loop() {}

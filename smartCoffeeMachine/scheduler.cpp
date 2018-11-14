@@ -7,23 +7,18 @@
 #include <util/atomic.h>
 
 Scheduler::Scheduler() {
-  tasks = ( TaskData_t** )malloc( IN_SIZE * sizeof( TaskData_t* ) );
-  vect_size = IN_SIZE;
-  vect_elem = 0;
+  tasks = LinkedList< TaskData_t* >();
   wdt_call_count = 0;
 }
 
 void Scheduler::AttachTask( ITask* task, unsigned long period ) {
-  TaskData_t* td = new TaskData_t { task, period, 0 };
-  if ( ++vect_elem >= vect_size )
-    tasks = ( TaskData_t** )realloc( tasks, ++vect_size * sizeof( TaskData_t* ) );
-  tasks[ vect_elem ] = td;
+    tasks.add( new TaskData_t { task, period, 0 } );
 }
 
 void Scheduler::DetachTask( ITask* task ) {
-  for ( int i = 0; i < vect_elem; i++ )
-    if ( task == tasks[ i ]->task )
-      tasks[ i ] = nullptr;
+  for ( int i = 0; i < tasks.size(); i++ )
+    if ( task == tasks.get( i )->task )
+      tasks.remove( i );
 }
 
 void Scheduler::StartSchedule( bool _start ) {
@@ -31,8 +26,8 @@ void Scheduler::StartSchedule( bool _start ) {
     // if pir -> attiva timer + intrpt
     Sleep();
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-      for ( int i = 0; i < vect_elem; i++ ) {
-        TaskData_t* td = tasks[ i ];
+      for ( int i = 0; i < tasks.size(); i++ ) {
+        TaskData_t* td = tasks.get( i );
         if ( td != nullptr && td->period - ( ( micros() - wakeup_time ) / 1000 + wdt_call_count * 250 ) ) {
           td->last_exec = wdt_call_count * 250 + ( micros() - wakeup_time ) / 1000 ;
           td->task->Exec();
