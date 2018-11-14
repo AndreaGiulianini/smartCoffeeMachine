@@ -4,6 +4,7 @@
 #include "timer.h"
 #include "presencereader.h"
 #include "distance_task.h"
+#include "make_coffee_tash.h"
 
 #define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
 Scheduler s;
@@ -12,6 +13,11 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(SP_TRIG_PIN, OUTPUT);
   pinMode(SP_ECHO_PIN, INPUT);
+  pinMode(BUTTON_PIN, INPUT);
+  pinMode(LED1_PIN, OUTPUT);
+  pinMode(LED2_PIN, OUTPUT);
+  pinMode(LED3_PIN, OUTPUT);
+
   
   GlobalVar_t gv {
     .state = STAND_BY,

@@ -4,6 +4,11 @@
 #define PIR_PIN 2
 #define SP_TRIG_PIN 11
 #define SP_ECHO_PIN 12
+#define BUTTON_PIN 3
+#define LED1_PIN 8
+#define LED2_PIN 9
+#define LED3_PIN 10
+
 
 #define NMAX_CAFFEE 10  // Max num of caffee
 #define DIST1 0.3       // Engagement distance
