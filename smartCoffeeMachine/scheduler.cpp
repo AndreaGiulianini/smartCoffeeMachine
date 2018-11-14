@@ -4,8 +4,11 @@
 #include "avr/wdt.h"
 #include "Arduino.h"
 
+int wdt_call_cicle;
+
 Scheduler::Scheduler() {
   tasks = LinkedList< ITask* >();
+  wdt_call_cicle = 0;
 }
 
 void Scheduler::AttachTask( ITask* task ) {
@@ -36,7 +39,7 @@ void Scheduler::Sleep() {
 
   MCUSR = 0;                          // reset various flags
   WDTCSR |= 0b00011000;               // see docs, set WDCE, WDE
-  WDTCSR =  0b01000000 | WDTO_1S;    // set WDIE, and appropriate delay
+  WDTCSR =  0b01000000 | WDTO_250MS;    // set WDIE, and appropriate delay
   wdt_reset();
   
   byte adcsra_save = ADCSRA;
@@ -54,4 +57,5 @@ void Scheduler::Sleep() {
 // watchdog interrupt
 ISR (WDT_vect) {
   wdt_disable();
+  wdt_call_cicle++;
 }

@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 #ifndef __GLOBAL_VAR__
 #define __GLOBAL_VAR__
 
 #define PIR_PIN 2
-#define SP_TRIG_PIN 11;
-#define SP_ECHO_PIN 12;
-#define SP_CONST 331.5 + 0.6*20;
+#define SP_TRIG_PIN 11
+#define SP_ECHO_PIN 12
 
 #define NMAX_CAFFEE 10  // Max num of caffee
 #define DIST1 0.3       // Engagement distance
@@ -29,7 +27,8 @@ typedef struct GV {
   State_t state;
   bool pir_present;
   bool hc_in_range;
-  bool time_elapsed; // flag?
+  bool time_elapsed;
+  bool time_acquired;
   bool make_coffee;
   bool coffee_ready;
   int coffee_pods;

@@ -17,6 +17,8 @@ class Distance : public ITask {
 
     void Exec() override;
 
+    float GetDistance();
+
   private:
     
     void getDistance();

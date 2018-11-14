@@ -3,6 +3,7 @@
 #include "stateswitcher.h"
 #include "timer.h"
 #include "presencereader.h"
+#include "distance_task.h"
 
 #define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
 
@@ -16,6 +17,7 @@ void setup() {
     .pir_present = false,
     .hc_in_range = false,
     .time_elapsed = false,
+    .time_acquired = true,
     .make_coffee = false,
     .coffee_ready = false,
     .coffee_pods = NMAX_CAFFEE
@@ -25,9 +27,9 @@ void setup() {
   s.AttachTask( new StateSwitcher( &gv ) );
   s.AttachTask( new Timer( &gv ) );
   s.AttachTask( new PresenceReader( &gv ) );
+  s.AttachTask( new Distance( &gv ) );
   s.StartSchedule();
 }
 
 void loop() {
 }
-
