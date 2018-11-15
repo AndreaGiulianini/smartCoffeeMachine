@@ -13,7 +13,7 @@ Coffee::Coffee( GlobalVar_t* gv ) {
 void Coffee::Exec() {
   if( digitalRead(BUTTON_PIN) == HIGH ){
     gv->coffee_pods--;
-    gv->msgs.add( "Making coffee" );
+    gv->msgs.add( "Making a coffee" );
     l1_state = HIGH;
   }
   if ( l1_state == HIGH && l2_state == LOW && gv->time_elapsed && !gv->time_acquired ) {
