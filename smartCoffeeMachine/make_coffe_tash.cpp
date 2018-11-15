@@ -2,6 +2,9 @@
 #include "msgservice.h"
 #include "Arduino.h"
 
+#define STR_EXPAND(tok) #tok
+#define STR(tok) STR_EXPAND(tok)
+
 Coffee::Coffee( GlobalVar_t* gv ) {
     this->gv = gv;
     MsgService.init();
@@ -22,14 +25,14 @@ void Coffee::Exec() {
         gv->coffee_ready = true;
         s = "The coffee is ready";
         MsgService.sendMsg(s);
-        MsgService.sendMsg(DT4);
+        MsgService.sendMsg(STR(DT4));
         delay(DT4);
     }
-    if( gv->coffee_pods = 0 ){
+    if( gv->coffee_pods == 0 ){
       String s = "No more coffee. Waiting for recharge";
         MsgService.sendMsg(s);
         if (MsgService.isMsgAvailable()) {
-            Msg* msg = MsgService.receiveMsg();    
+            Msg *msg = MsgService.receiveMsg();    
             if(msg->getContent()){
                 gv->coffee_pods = NMAX_CAFFEE;
             }
