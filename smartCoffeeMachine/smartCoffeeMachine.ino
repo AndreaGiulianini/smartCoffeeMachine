@@ -16,7 +16,7 @@ void setup() {
   pinMode(LED1_PIN, OUTPUT);
   pinMode(LED2_PIN, OUTPUT);
   pinMode(LED3_PIN, OUTPUT);
-
+  pinMode(POT_PIN, INPUT);
   
   GlobalVar_t gv {
     .state = STAND_BY,

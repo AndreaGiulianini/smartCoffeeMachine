@@ -12,6 +12,7 @@
 #define LED1_PIN 8
 #define LED2_PIN 9
 #define LED3_PIN 10
+#define POT_PIN A5
 
 
 #define NMAX_CAFFEE 10  // Max num of caffee
