@@ -1,6 +1,10 @@
 #ifndef __GLOBAL_VAR__
 #define __GLOBAL_VAR__
 
+#include "WString.h"
+
+#define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
+
 #define PIR_PIN 2
 #define SP_TRIG_PIN 11
 #define SP_ECHO_PIN 12
@@ -37,6 +41,7 @@ typedef struct GV {
   bool make_coffee;
   bool coffee_ready;
   int coffee_pods;
+  String msg_to_send;
 } GlobalVar_t;
 
 #endif

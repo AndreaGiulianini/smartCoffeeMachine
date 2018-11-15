@@ -5,11 +5,10 @@
 #include "presencereader.h"
 #include "distance_task.h"
 #include "make_coffee_task.h"
+#include "postman.h"
+#include "src/lib/msgservice.h"
 
-#define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
-Scheduler s;
 void setup() {
-  Serial.begin( BAUD_RATE );
   pinMode(PIR_PIN, INPUT);
   pinMode(SP_TRIG_PIN, OUTPUT);
   pinMode(SP_ECHO_PIN, INPUT);
@@ -27,14 +26,17 @@ void setup() {
     .time_acquired = true,
     .make_coffee = false,
     .coffee_ready = false,
-    .coffee_pods = NMAX_CAFFEE
+    .coffee_pods = NMAX_CAFFEE,
+    .msg_to_send = ""
   };
 
-  s = Scheduler();
+  Scheduler s = Scheduler();
   s.AttachTask( new StateSwitcher( &gv ) );
   s.AttachTask( new Timer( &gv, &s ) );
   s.AttachTask( new PresenceReader( &gv ) );
   s.AttachTask( new Distance( &gv ) );
+  s.AttachTask( new Coffee( &gv ) );
+  s.AttachTask( new Postman( &gv ) );
   s.StartSchedule();
 }
 
