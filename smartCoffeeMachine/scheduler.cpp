@@ -3,6 +3,7 @@
 #include "avr/power.h"
 #include "avr/wdt.h"
 #include "Arduino.h"
+#include "math.h"
 
 #include <util/atomic.h>
 
@@ -28,8 +29,8 @@ void Scheduler::StartSchedule( bool _start ) {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
       for ( int i = 0; i < tasks.size(); i++ ) {
         TaskData_t* td = tasks.get( i );
-        if ( td != nullptr && td->period - ( ( micros() - wakeup_time ) / 1000 + wdt_call_count * 250 ) ) {
-          td->last_exec = wdt_call_count * 250 + ( micros() - wakeup_time ) / 1000 ;
+        if ( td != nullptr && td->period - ( ( micros() - wakeup_time ) / 1000 + wdt_call_count * SCHED_SPEED ) ) {
+          td->last_exec = wdt_call_count * SCHED_SPEED + ( micros() - wakeup_time ) / 1000 ;
           td->task->Exec();
         }
       }
@@ -38,7 +39,7 @@ void Scheduler::StartSchedule( bool _start ) {
 }
 
 long Scheduler::GetTime() {
-  return wdt_call_count * 250 + millis() - wakeup_time;
+  return wdt_call_count * SCHED_SPEED + round( ( micros() - wakeup_time ) / 1000.0 );
 }
 
 void Scheduler::Sleep() { 
@@ -71,7 +72,7 @@ void Scheduler::Sleep() {
    * - WDP[3:0]: Watchdog Timer Prescaler 3, 2, 1 and 0
    */
   WDTCSR = (0 << WDIF) | (1 << WDIE) | (0 << WDP3) | (1 << WDCE) 
-           | (1 << WDE) | (1 << WDP2) | (1 << WDP1) | (0 << WDP0);
+           | (1 << WDE) | (1 << WDP2) | (0 << WDP1) | (0 << WDP0);
            
   WDTCSR &= ~(1 << WDE);                                       /* set the WDE pin to 0: 
                                       1 << WDE = 0b00001000 -> ~ = NOT -> 0b11110111 */

@@ -5,6 +5,7 @@
 #include "LinkedList.h"
 
 #define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
+#define SCHED_SPEED 250
 
 #define PIR_PIN 2
 #define SP_TRIG_PIN 11
@@ -14,7 +15,6 @@
 #define LED2_PIN 9
 #define LED3_PIN 10
 #define POT_PIN A5
-
 
 #define NMAX_CAFFEE 10  // Max num of caffee
 #define DIST1 0.3       // Engagement distance

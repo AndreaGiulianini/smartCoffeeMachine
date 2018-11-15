@@ -10,6 +10,8 @@ class StateSwitcher : public ITask {
 
     GlobalVar_t* gv;
 
+    bool button_flag;
+
   public:
 
     StateSwitcher( GlobalVar_t* gv );

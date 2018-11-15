@@ -44,7 +44,7 @@ void StateSwitcher::Exec() {
    * Se la macchina non rileva più nessuno entro quella distanza per DT2a secondi, 
    * la macchina torna nella modalità ON.
    */
-  if ( gv->state == READY && gv->time_elapsed && !gv->time_acquired && !gv->pir_present ) {
+  if ( gv->state == READY && gv->time_elapsed && !gv->time_acquired && !gv->hc_in_range ) {
     gv->state = ON;
     gv->time_acquired = true;
     Serial.println("READY to ON");

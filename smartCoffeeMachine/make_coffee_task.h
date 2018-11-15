@@ -9,6 +9,8 @@ class Coffee : public ITask {
   private:
 
     GlobalVar_t* gv;
+
+    bool button_flag;
     
     int l1_state, l2_state, l3_state;
 
