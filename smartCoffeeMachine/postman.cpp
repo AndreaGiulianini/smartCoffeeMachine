@@ -6,10 +6,8 @@ Postman::Postman( GlobalVar_t* gv ) {
 }
 
 void Postman::Exec() {
-  if( gv->msg_to_send != "" ) {
-    MsgService.sendMsg( gv->msg_to_send );
-    gv->msg_to_send = "";
-  }
+  if( gv->msgs.size() > 0 )
+    MsgService.sendMsg( gv->msgs.remove( 0 ) );
 
   if ( MsgService.isMsgAvailable() ) {
     Msg *msg = MsgService.receiveMsg();    

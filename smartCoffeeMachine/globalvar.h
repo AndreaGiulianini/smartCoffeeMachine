@@ -2,6 +2,7 @@
 #define __GLOBAL_VAR__
 
 #include "WString.h"
+#include "LinkedList.h"
 
 #define BAUD_RATE 2000000 // se non invia i dati velocemente entra in sleep prima di aver finito
 
@@ -42,7 +43,7 @@ typedef struct GV {
   bool make_coffee;
   bool coffee_ready;
   int coffee_pods;
-  String msg_to_send;
+  LinkedList< String >msgs;
 } GlobalVar_t;
 
 #endif

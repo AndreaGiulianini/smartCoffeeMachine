@@ -27,7 +27,7 @@ void setup() {
     .make_coffee = false,
     .coffee_ready = false,
     .coffee_pods = NMAX_CAFFEE,
-    .msg_to_send = ""
+    .msgs = LinkedList< String >()
   };
 
   MsgService.init( BAUD_RATE );
