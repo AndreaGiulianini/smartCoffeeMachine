@@ -1,11 +1,11 @@
-#ifndef __TIMER__
-#define __TIMER__
+#ifndef __TIMER_TASK__
+#define __TIMER_TASK__
 
 #include "globalvar.h"
 #include "itask.h"
 #include "scheduler.h"
 
-class Timer : public ITask {
+class TimerTask : public ITask {
 
   private:
 
@@ -21,7 +21,7 @@ class Timer : public ITask {
 
   public:
 
-    Timer( GlobalVar_t* gv, Scheduler* scheduler );
+    TimerTask( GlobalVar_t* gv, Scheduler* scheduler );
 
     void Exec() override;
 

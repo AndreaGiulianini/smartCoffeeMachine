@@ -3,9 +3,9 @@
 
 class ITask {
 
-  public:
+  	public:
 
-    virtual void Exec() = 0;
+    	virtual void Exec() = 0;
     
 };
 

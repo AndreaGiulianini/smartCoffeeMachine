@@ -26,26 +26,25 @@
 #define DT4 5           // Max time to remove coffee
 
 typedef enum STATE {
-  STAND_BY,
-  ON,
-  READY,
-  MAKING_COFFEE,
-  TAKING_COFFEE,
-  MAINTENANCE,
+  	STAND_BY,
+  	ON,
+  	READY,
+  	MAKING_COFFEE,
+  	TAKING_COFFEE,
+  	MAINTENANCE,
 
-  UNKNOWN_STATE = 9999
+  	UNKNOWN_STATE = 9999
 } State_t;
 
 typedef struct GV {
-  State_t state;
-  bool pir_present;
-  bool hc_in_range;
-  bool time_elapsed;
-  bool time_acquired;
-  bool make_coffee;
-  bool coffee_ready;
-  int coffee_pods;
-  LinkedList< String >msgs;
+  	State_t state;
+  	bool pir_present;
+  	bool hc_in_range;
+  	bool time_elapsed;
+  	bool time_acquired;
+  	bool coffee_ready;
+  	int coffee_pods;
+  	LinkedList< String >msgs;
 } GlobalVar_t;
 
 #endif

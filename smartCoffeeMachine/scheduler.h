@@ -9,37 +9,37 @@
 #define IN_SIZE 10
 
 typedef struct TASK_DATA {
-  ITask* task;
-  unsigned long period;
-  unsigned long last_exec;
+	ITask* task;
+	unsigned long period;
+	unsigned long last_exec;
 } TaskData_t;
 
 class Scheduler {
 
-  private:
+	private:
 
-    LinkedList< TaskData_t* > tasks;
+		LinkedList< TaskData_t* > tasks;
 
-    unsigned long wakeup_time;
+		unsigned long wakeup_time;
 
-    long wdt_call_count;
+		long wdt_call_count;
 
-  public:
+	public:
 
-    Scheduler();
+		Scheduler();
 
-    void AttachTask( ITask* task, unsigned long period = DEFAULT_PERIOD );
+		void AttachTask( ITask* task, unsigned long period = DEFAULT_PERIOD );
 
-    void DetachTask( ITask* task );
+		void DetachTask( ITask* task );
 
-    void StartSchedule( bool _true = true);
+		void StartSchedule( bool _true = true);
 
-    long GetTime();
+		long GetTime();
 
-  private:
+	private:
 
-    void Sleep();
-    
+		void Sleep();
+
 };
 
 #endif

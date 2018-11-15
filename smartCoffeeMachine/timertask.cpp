@@ -1,13 +1,13 @@
-#include "timer.h"
+#include "timertask.h"
 #include "Arduino.h"
 
-Timer::Timer( GlobalVar_t* gv, Scheduler* scheduler ) {
+TimerTask::TimerTask( GlobalVar_t* gv, Scheduler* scheduler ) {
   this->gv = gv;
   this->scheduler = scheduler;
   next_state = UNKNOWN_STATE;
 }
 
-void Timer::Exec() {
+void TimerTask::Exec() {
   CheckTimerReset();
   // ON to STAND BY
   StartTimer( gv->state == ON && !gv->pir_present, DT2b, STAND_BY );
@@ -19,7 +19,7 @@ void Timer::Exec() {
   StartTimer( gv->state == MAKING_COFFEE, DT3 / 3.0 );
 }
 
-void Timer::CheckTimerReset() {
+void TimerTask::CheckTimerReset() {
   if ( gv->time_acquired 
       || ( gv->state == ON && next_state == STAND_BY && gv->pir_present && !gv->time_acquired ) 
       || ( gv->state == ON && next_state == READY && !gv->hc_in_range && !gv->time_acquired ) 
@@ -30,7 +30,7 @@ void Timer::CheckTimerReset() {
   }
 }
 
-void Timer::StartTimer( bool condition, unsigned long time_to_reach, State_t next_state ) {
+void TimerTask::StartTimer( bool condition, unsigned long time_to_reach, State_t next_state ) {
   if ( condition ) {
     if ( !timer_started ) {
       timer_started = true;
