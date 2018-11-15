@@ -3,12 +3,15 @@
 
 #include "globalvar.h"
 #include "itask.h"
+#include "LinkedList.h"
 
 class Sugar : public ITask {
 
   private:
 
     GlobalVar_t* gv;
+
+    LinkedList< String > msgs;
     
     float sugar;
 

@@ -3,8 +3,6 @@
 
 Postman::Postman( GlobalVar_t* gv ) {
   this->gv = gv;
-
-  MsgService.init( BAUD_RATE );
 }
 
 void Postman::Exec() {

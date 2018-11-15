@@ -30,6 +30,8 @@ void setup() {
     .msg_to_send = ""
   };
 
+  MsgService.init( BAUD_RATE );
+
   Scheduler s = Scheduler();
   s.AttachTask( new StateSwitcher( &gv ) );
   s.AttachTask( new Timer( &gv, &s ) );
