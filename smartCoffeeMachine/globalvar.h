@@ -31,7 +31,9 @@ typedef enum STATE {
   READY,
   MAKING_COFFEE,
   TAKING_COFFEE,
-  MAINTENANCE
+  MAINTENANCE,
+
+  UNKNOWN_STATE = 9999
 } State_t;
 
 typedef struct GV {

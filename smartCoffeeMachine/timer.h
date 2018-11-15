@@ -17,6 +17,8 @@ class Timer : public ITask {
 
     unsigned long initial_time;
 
+    State_t next_state;
+
   public:
 
     Timer( GlobalVar_t* gv, Scheduler* scheduler );
@@ -27,7 +29,7 @@ class Timer : public ITask {
     
     void CheckTimerReset();
 
-    void StartTimer( bool condition, unsigned long time_to_reach );
+    void StartTimer( bool condition, unsigned long time_to_reach, State_t next_state = UNKNOWN_STATE );
   
 };
 
