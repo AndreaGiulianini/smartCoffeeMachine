@@ -17,14 +17,15 @@ void TimerTask::Exec() {
   StartTimer( gv->state == READY && !gv->hc_in_range, DT2a, ON );
   // 
   StartTimer( gv->state == MAKING_COFFEE, DT3 / 3.0 );
-  StartTimer( gv->state == MAKING_COFFEE && gv->coffee_ready, DT3 / 3.0 );
+  StartTimer( gv->state == TAKING_COFFEE, DT4 );
 }
 
 void TimerTask::CheckTimerReset() {
   if ( gv->time_acquired 
       || ( gv->state == ON && next_state == STAND_BY && gv->pir_present && !gv->time_acquired ) 
       || ( gv->state == ON && next_state == READY && !gv->hc_in_range && !gv->time_acquired ) 
-      || ( gv->state == READY && next_state == ON && gv->hc_in_range && !gv->time_acquired ) ) {
+      || ( gv->state == READY && next_state == ON && gv->hc_in_range && !gv->time_acquired )
+      || ( gv->state == STAND_BY ) ) {
     timer_started = false;
     gv->time_elapsed = false;
     gv->time_acquired = false;
@@ -40,8 +41,6 @@ void TimerTask::StartTimer( bool condition, unsigned long time_to_reach, State_t
       gv->time_acquired = false;
       this->next_state = next_state;
     }
-    //if ( timer_started && ( scheduler->GetTime() - initial_time >= ( time_to_reach * 1000 ) ) )
-    //  gv->time_elapsed = true;
     gv->time_elapsed = timer_started && ( scheduler->GetTime() - initial_time >= ( time_to_reach * 1000 ) );
   }
 }

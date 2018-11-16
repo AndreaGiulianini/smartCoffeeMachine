@@ -65,7 +65,9 @@ void StateSwitcherTask::Exec() {
  /*
  * 
   */
-  if ( gv->state == TAKING_COFFEE && ( gv->time_elapsed || gv->hc_in_range ) && gv->coffee_pods > 0 ) {
+  if ( gv->state == TAKING_COFFEE 
+       && gv->coffee_pods > 0 
+       && ( ( gv->time_elapsed && !gv->time_acquired ) || gv->hc_in_range ) ) {
     gv->state = STAND_BY;
     gv->coffee_ready = false;
     Serial.println("TKG to STB");
@@ -74,7 +76,9 @@ void StateSwitcherTask::Exec() {
 	/*
 	* 
 	*/
-	if ( gv->state == TAKING_COFFEE && ( gv->time_elapsed || gv->hc_in_range ) && gv->coffee_pods == 0 ) {
+	if ( gv->state == TAKING_COFFEE 
+	     && ( ( gv->time_elapsed && !gv->time_acquired ) || gv->hc_in_range ) 
+	     && gv->coffee_pods == 0 ) {
 		gv->state = MAINTENANCE;
     gv->coffee_ready = false;
 		Serial.println("TKG to MAIN");
