@@ -17,6 +17,7 @@ void TimerTask::Exec() {
   StartTimer( gv->state == READY && !gv->hc_in_range, DT2a, ON );
   // 
   StartTimer( gv->state == MAKING_COFFEE, DT3 / 3.0 );
+  StartTimer( gv->state == MAKING_COFFEE && gv->coffee_ready, DT3 / 3.0 );
 }
 
 void TimerTask::CheckTimerReset() {
@@ -39,6 +40,8 @@ void TimerTask::StartTimer( bool condition, unsigned long time_to_reach, State_t
       gv->time_acquired = false;
       this->next_state = next_state;
     }
+    //if ( timer_started && ( scheduler->GetTime() - initial_time >= ( time_to_reach * 1000 ) ) )
+    //  gv->time_elapsed = true;
     gv->time_elapsed = timer_started && ( scheduler->GetTime() - initial_time >= ( time_to_reach * 1000 ) );
   }
 }

@@ -7,19 +7,15 @@
 
 MakeCoffeeTask::MakeCoffeeTask( GlobalVar_t* gv ) {
   	this->gv = gv;
-  	button_flag = true;
   	l1_state = l2_state = l3_state = LOW;
 }
 
 void MakeCoffeeTask::Exec() {
-  	// SPOSTA IN STATE SWITCHER
-  	if( digitalRead(BUTTON_PIN) == HIGH && button_flag && l1_state == LOW ){
+  	if( gv->state == MAKING_COFFEE && l1_state == LOW ){
     	gv->coffee_pods--;
     	gv->msgs.add( "Making a coffee" );
     	l1_state = HIGH;
-    	button_flag = false;
-  	} else if ( digitalRead(BUTTON_PIN) == LOW )
-    	button_flag = true;
+  	}
     
 	if ( l1_state == HIGH && l2_state == LOW && gv->time_elapsed && !gv->time_acquired ) {
 		l2_state = HIGH;
@@ -32,15 +28,11 @@ void MakeCoffeeTask::Exec() {
 	}
 
 	if ( l3_state == HIGH && !gv->coffee_ready && gv->time_elapsed && !gv->time_acquired ) {
-		gv->time_acquired = true;
-		gv->coffee_ready = true;
-		gv->msgs.add( "The coffee is ready" );
-		gv->msgs.add( STR(DT4) );
-	}
-
-	if ( gv->coffee_ready && gv->time_elapsed && !gv->time_acquired ) {
 		l1_state = l2_state = l3_state = LOW;
 		gv->time_acquired = true;
+    gv->coffee_ready = true;
+    gv->msgs.add( "The coffee is ready" );
+    gv->msgs.add( STR(DT4) );
 	}
 
 	digitalWrite( LED1_PIN, l1_state );

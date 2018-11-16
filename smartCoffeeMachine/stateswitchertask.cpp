@@ -29,10 +29,6 @@ void StateSwitcherTask::Exec() {
 	* Se viene rilevato qualcuno  ad una distanza inferiore a DIST1 cm per un certo 
 	* numero DT1 secondi [...]e la macchina entra in una modalità READY.
 	*/
-	/*Serial.print("Range: ");
-	Serial.println(gv->hc_in_range);
-	Serial.print("Time: ");
-	Serial.println(gv->time_elapsed);*/
 	if ( gv->state == ON && gv->time_elapsed && !gv->time_acquired && gv->hc_in_range ) {
 		gv->state = READY;
 		gv->time_acquired = true;
@@ -61,17 +57,27 @@ void StateSwitcherTask::Exec() {
 	/*
 	* 
 	*/
-	if ( gv->state == MAKING_COFFEE && gv->coffee_ready && gv->coffee_pods > 0 ) {
-		gv->state = STAND_BY;
-		Serial.println("MKG to STB");
+	if ( gv->state == MAKING_COFFEE && gv->coffee_ready ) {
+		gv->state = TAKING_COFFEE;
+		Serial.println("MKG to TKG");
 	}
+
+ /*
+ * 
+  */
+  if ( gv->state == TAKING_COFFEE && ( gv->time_elapsed || gv->hc_in_range ) && gv->coffee_pods > 0 ) {
+    gv->state = STAND_BY;
+    gv->coffee_ready = false;
+    Serial.println("TKG to STB");
+  }
 
 	/*
 	* 
 	*/
-	if ( gv->state == MAKING_COFFEE && gv->coffee_ready && gv->coffee_pods == 0 ) {
+	if ( gv->state == TAKING_COFFEE && ( gv->time_elapsed || gv->hc_in_range ) && gv->coffee_pods == 0 ) {
 		gv->state = MAINTENANCE;
-		Serial.println("MKG to MAIN");
+    gv->coffee_ready = false;
+		Serial.println("TKG to MAIN");
 	}
 
 	if ( gv->state == MAINTENANCE && gv->coffee_pods > 0 ) {
