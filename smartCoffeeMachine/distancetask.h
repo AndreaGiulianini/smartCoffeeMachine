@@ -6,20 +6,20 @@
 
 class DistanceTask : public ITask {
 
-  	private:
+  private:
 
-    	GlobalVar_t* gv;
+    GlobalVar_t* gv;
 
-  	public:
+  public:
 
-    	DistanceTask( GlobalVar_t* gv );
+    DistanceTask( GlobalVar_t* gv );
 
-    	void Exec() override;
+    void Exec() override;
 
-  	private:
+  private:
 
-    	float GetDistance();
-  
+    float GetDistance();
+
 };
 
 #endif

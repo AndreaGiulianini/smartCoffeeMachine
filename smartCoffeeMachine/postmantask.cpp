@@ -6,8 +6,8 @@ PostmanTask::PostmanTask( GlobalVar_t* gv ) {
 }
 
 void PostmanTask::Exec() {
-	if ( gv->msgs.size() > 0 )
-		MsgService.sendMsg( gv->msgs.remove( 0 ) );
+	while ( gv->msgs.size() > 0 )
+		MsgService.sendMsg( *gv->msgs.remove( 0 ) );
 
 	if ( MsgService.isMsgAvailable() ) {
 		Msg *msg = MsgService.receiveMsg();    
