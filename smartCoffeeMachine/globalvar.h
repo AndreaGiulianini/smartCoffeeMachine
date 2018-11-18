@@ -44,7 +44,7 @@ typedef struct GV {
   bool time_acquired;
   bool coffee_ready;
   int coffee_pods;
-  LinkedList< String* >msgs;
+  LinkedList< String >msgs;
 } GlobalVar_t;
 
 #endif

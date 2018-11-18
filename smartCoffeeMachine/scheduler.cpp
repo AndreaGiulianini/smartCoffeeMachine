@@ -5,8 +5,6 @@
 #include "Arduino.h"
 #include "math.h"
 
-#include <util/atomic.h>
-
 Scheduler::Scheduler() {
 	tasks = LinkedList< TaskData_t* >();
 	wdt_call_count = 0;
@@ -25,13 +23,11 @@ void Scheduler::DetachTask( ITask* task ) {
 void Scheduler::StartSchedule( bool _start ) {
 	while( _start ) {
 		Sleep();
-		ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-			for ( int i = 0; i < tasks.size(); i++ ) {
-				TaskData_t* td = tasks.get( i );
-				if ( td != nullptr && td->period - ( ( micros() - wakeup_time ) / 1000 + wdt_call_count * SCHED_SPEED ) ) {
-					td->last_exec = wdt_call_count * SCHED_SPEED + ( micros() - wakeup_time ) / 1000 ;
-					td->task->Exec();
-				}
+	  for ( int i = 0; i < tasks.size(); i++ ) {
+			TaskData_t* td = tasks.get( i );
+			if ( td != nullptr && td->period - ( ( micros() - wakeup_time ) / 1000 + wdt_call_count * SCHED_SPEED ) ) {
+				td->last_exec = wdt_call_count * SCHED_SPEED + ( micros() - wakeup_time ) / 1000 ;
+				td->task->Exec();
 			}
 		}
 	}

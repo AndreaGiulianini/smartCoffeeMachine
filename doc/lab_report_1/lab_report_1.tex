@@ -2,6 +2,7 @@
 %	PACKAGES AND DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
+% !TeX spellcheck = it
 \documentclass{article}
 
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
@@ -9,6 +10,8 @@
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements
 \usepackage[export]{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
 
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
 
@@ -30,16 +33,13 @@
 
 \maketitle % Insert the title, author and date
 
-% If you wish to include an abstract, uncomment the lines below
-% \begin{abstract}
-% Abstract text
-% \end{abstract}
+\newpage
 
 %----------------------------------------------------------------------------------------
 %	SECTION 1
 %----------------------------------------------------------------------------------------
 
-\section{Specifics}
+\section{Specifiche}
 
 Si vuole realizzare un sistema embedded che implementa una macchina del caffè smart.
 \newline\newline
@@ -53,7 +53,7 @@ Si vuole realizzare un sistema embedded che implementa una macchina del caffè s
 %Objective 2 text
 %\end{description}
 
-\subsection{Components}
+\subsection{Componenti}
 
 \begin{itemize}
 	\item 3 led (L1, L2, L3) verdi
@@ -62,7 +62,7 @@ Si vuole realizzare un sistema embedded che implementa una macchina del caffè s
 	\item Collegamento seriale con PC
 \end{itemize}
 
-\subsection{System Behaviour}
+\subsection{Comportamento del Sistema}
 
 La macchina parte in una modalità STAND BY, in cui si presuppone avere un consumo ridotto di energia elettrica.  Quando viene rilevata la presenza di qualcuno nelle vicinanze allora esce dalla modalità di risparmio, entrando in una modalità ON.
 \newline\newline
@@ -78,7 +78,7 @@ Infine, la coffee machine può esaurire il materiale per il caffè. Si suppone c
 \newline\newline
 Realizzare il sistema su Arduino + PC collegati via seriale, implementando il programma su Arduino in C++ e il programma su PC in Java.  Utilizzare un approccio a task, con modello di comportamento basato su macchine a stati finiti sincrone.
 
-\subsection{Default Value}
+\subsection{Valori di Funzionamento}
 \vskip 0.1 cm
 \begin{itemize}
 	\item DIST1 (Engagement distance) = 0.3 m
@@ -97,74 +97,73 @@ Per tutti gli aspetti non specificati, fare le scelte che si credono più opport
 %	SECTION 2
 %----------------------------------------------------------------------------------------
 
-\section{Project Solution}
-\subsection{Introduction to the Approach}
+\section{Soluzione}
+
+\subsection{Introduzione all'Approccio}
 La soluzione del progetto viene fornita, come richiesto, con l'approccio a task. Ogni task svolge un compito, per quanto semplice esso sia. Anche se alcuni elementi non avrebbero veramente avuto bisogno di un task singolo, ma sarebbero potuti essere inseriti direttamente nelle classi che li utilizzavano (vedi pir), è stato comunque scelto di utilizzare una filosofia di "scorporamento" abbastanza aggressiva per massimizzare la modularità del sistema. Ne risulta un sistema con più entità in gioco di quelle necessarie, ma il funzionamento non risulta affatto più complesso di un sistema con minor modulazione. \newline
 I moduli, i task e le entità del progetto dialogano attraverso variabili comuni. Non è stato volontariamente utilizzato il termine "globali" perchè effettivamente globali queste non sono. Queste variabili comuni sono infatti incluse dentro una struttura dati, e non istanziate singolarmente tramite la keyword "extern". Non c'è un vero motivo per il quale abbiamo preferito questo approccio ne abbiamo trovato un motivo per il quale questo possa essere svantaggioso, è stata quindi una pura scelta implementativa.
 
-\subsection{Task Analize}
-In questa sezione verrà analizzato l'utilizzo dei singoli task e la logica che vi è dietro. Le FSM verranno mostrate e analizzate in una sezione a se stante posta successivamente a questa.
+\subsection{Analisi dei Componenti}
+In questa sezione verrà analizzato l'utilizzo dei singoli task e la logica che vi è dietro. Le FSM presentate sono relative alle componenti più importanti del programma. Sono quindi escluse dalla trattazione FSM estremamente semplici e con transizioni banali (come può ad esempio risultare quella del sensore di presenza).
+
+\subsubsection{Funzionamento generale}
+Questa FSM rappresenta il funzionamento generale della macchina, evidenziando i vari stati e le condizioni di transizione a un livello astratto e senza considerare quindi le variabili in gioco nel programma. Come si può evincere dallo schema, agli stati definiti nella consegna sono stati aggiunti due ulteriori stati:
+\begin{itemize}
+	\item MAKING COFFEE
+	\item TAKING COFFEE
+\end{itemize}
+Ci siamo presi la libertà di fare ciò perchè abbiamo considerato l'inserimento di questi due stati più esplicativo del funzionamento della macchina e perchè non abbiamo ritenuto che questo rendesse più facile o snaturasse l'intento del compito, ovvero l'apprendimento di utilizzo di un modello a task in un sistema integrato. \newline
+Fatta questa premessa, il funzionamento si basa sul passaggio fra vari stati, ognuno dei quali svolge compiti ben definiti in funzione dello stato attuale della macchina.
+\vskip 0.3 cm
+\begin{center}
+\centering { \includegraphics[scale=0.65]{res/pdf/general_fsm.pdf} \par }
+\end{center}
 
 \subsubsection{Scheduler}
-Questo non è un task, ma è l'entità che permette all'approccio a task di avere applicazione. Ogni tot millisecondi esce da un costante stato di sleep per lanciare in esecuzione i vari task. L'uscita dallo stato di sleep è determinata dall'interrupt generato dal watchdog timer (settato come interrupt e non reset).
+Questo non è un task, ma è l'entità che permette all'approccio a task di avere applicazione. Ogni tot millisecondi esce da un costante stato di sleep per lanciare in esecuzione i vari task. L'uscita dallo stato di sleep è determinata dall'interrupt generato dal watchdog timer (settato come interrupt e non come reset).
 
 \subsubsection{ITask}
 Non si tratta di un vero e proprio task ma di un interfaccia alla quale questi devono aderire per essere considerati tali. Definisce un metodo virtuale puro Exec() che verrà richiamato dallo scheduler ogni volta che il task dovrà essere eseguito.
 
 \subsubsection{Distance}
-Il compito di questo task consiste nel valutare se la distanza acquisità dal sensore di prossimità rientra nel range valutato in uno specifico stato. Se ad esempio ci troviamo nello stato ON, allora sappiamo che la distanza richiesta per passare allo stato READY deve essere inferiore a DIST1. Con questi dati possiamo informare gli altri task (tramite variabili condivise) se un individuo si trova nel "range" corretto per il passaggio al successivo stato.
+Il compito di questo task consiste nel valutare se la distanza acquisita dal sensore di prossimità rientra nel range valutato in uno specifico stato. Se ad esempio ci trovassimo nello stato ON, allora sapremmo che la distanza richiesta per passare allo stato READY deve essere inferiore a DIST1. Con questi dati possiamo informare gli altri task (tramite variabili condivise) se un individuo si trova nel "range" corretto per il passaggio al successivo stato.
 
 \subsubsection{MakeCoffee}
-Se la macchina si trova nello stato MAKING\_COFFEE, questo si occuperà di "preparare il caffe" e di visualizzare l'avanzamento della preparazione tramite i led. Sarebbe anche stato possibile scomporre la gestione dei led in un ulteriore task (per permetterne la gestione in ulteriori possibili circostanze non specificate nel testo), ma per mancanza di tempo e per la relativa utilità di questo nel contesto attuale si è deciso di integrare le due parti.
-
-\subsubsection{Postman}
-Quest'entità si occupa di inviare i messaggi accodati da altri task e di riceverne tramite la seriale. La logica è semplice: se sono presenti messaggi da inviare allora li trasmette, mentre se sono presenti messaggi in arrivo allora li riceve dalla seriale.
+\vskip 0.3 cm
+\begin{center}
+\centering { \includegraphics[scale=0.65]{res/pdf/makecoffee_fsm.pdf} \par }
+\end{center}
+Se la macchina si trova nello stato MAKING\_COFFEE, il task si occuperà di "preparare il caffe" e di visualizzare l'avanzamento della preparazione tramite i led. La presenza di una freccia rientrante nello stato di "MAKE COFFEE" nella FSM indica che a ogni scadere del timer, se il caffè non risulta pronto, si accenderà un nuovo led. \newline
+Sarebbe anche stato possibile scomporre la gestione dei led in un ulteriore task (per permetterne la gestione in ulteriori possibili circostanze non specificate nel testo), ma per mancanza di tempo e per la relativa utilità di questo nel contesto attuale si è deciso di integrare le due parti.
 
 \subsubsection{Potentiometer}
-Questo task acquisisce il valore del potenziometro e lo mappa nelle varie possibili quantità selezionabili. Se il valore acquisito differisce da quello precedente, allora richiede l'invio di un messaggio attraverso la seriale che notifichi il cambiamento.
+Questo task acquisisce il valore del potenziometro e lo mappa nelle varie possibili quantità di zucchero selezionabili. Se il valore acquisito differisce da quello precedente, allora richiede l'invio di un messaggio attraverso la seriale che notifichi il cambiamento.
 
 \subsubsection{Presence}
 E' il task che si occupa di catturare la presenza o assenza di un individuo tramite il sensore a infrarossi. Non sarebbe stato necessario creare un task solo per questo sensore, ma data la sua importanza a livello logico e di gestione nel programma, abbiamo ritenuto che inserirlo come task avrebbe suscitato in un lettore (del codice) un idea lampante di quanto questo elemento sia fondamentale nel funzionamento della macchina.
 
+\subsubsection{Postman}
+\vskip 0.3 cm
+\begin{center}
+\centering { \includegraphics[scale=0.65]{res/pdf/postman_fsm.pdf} \par }
+\end{center}
+Quest'entità si occupa di inviare i messaggi accodati da altri task e di riceverne tramite la seriale. La logica è semplice: finchè sono presenti messaggi da inviare li trasmette, mentre finchè sono presenti messaggi in arrivo li riceve dalla seriale.
+
 \subsubsection{StateSwitcher}
-E' il task che si occupa del passaggio di stato della macchina. La transizione è definita dalle variabili settate dagli altri task (e.g.: pir\_present).
+E' il task che si occupa del passaggio di stato della macchina. La transizione è definita dalle variabili settate dagli altri task (e.g.: pir\_present). \newline
+E' di seguito inserito lo schema della FSM relativa. E' molto simile a quello del funzionamento generale della macchina ma, a differenza di quello, mostra le condizioni di transizione da uno stato all'altro tramite le variabili presenti nel programma.
+\vskip 0.3 cm
+\begin{center}
+\centering { \includegraphics[scale=0.65]{res/pdf/stateswitcher_fsm.pdf} \par }
+\end{center}
 
 \subsubsection{Timer}
-L'idea dietro al task timer è che a seconda dello stato generale della machina questo dovrà partire (o aspettare in alcuni casi: vedasi stato "READY in range") con l'intento di raggiungere differenti tempistiche. Allo scadere del timer questo notificherà l'evento agli altri stati tramite il solo utilizzo di variabili globali. Questa separazione del compito evita che all'inserimento di un nuovo task si debba andare a inserire all'interno del timer un riferimento a quest'ultimo ed evitando quindi che il timer debba andare a notificare direttamente a questo l'esito.
-
-\newpage
-%----------------------------------------------------------------------------------------
-%	SECTION 3
-%----------------------------------------------------------------------------------------
-
-\section{Finite State Machines - Schemes}
-Sono di seguito presentate le macchine a stati finiti relative alle componentistiche più importanti e meno banali del programma. Sono quindi escluse dalla trattazione FSM presentanti solo due stati e con condizioni banali (come può ad esempio risultare quella del sensore di presenza).
-
-\subsection{Overview}
+L'idea dietro al task timer è che a seconda dell'operazione in atto nella machina, questo dovrà dire agli altri task se il tempo atteso (che varia da operazione a operazione) è passato o meno. Allo scadere, il timer notificherà l'evento agli altri task tramite il solo utilizzo di variabili globali. \newline
+La FSM del task Timer è molto semplice ma le condizioni di transizione tra i due stati sono varie. Per non appesantire troppo lo schema è stato scelto di non mostrare tutte le condizioni direttamente su questo, ma di inserire al loro posto un "riferimento" ad esse ed esporle quindi sotto.
 \vskip 0.3 cm
 \begin{center}
-\centering { \includegraphics[scale=0.60]{res/pdf/general-fsm-crop.pdf} }
+\centering { \includegraphics[scale=0.65]{res/pdf/timer_fsm.pdf} \par }
 \end{center}
-Questa FSM rappresenta il funzionamento generale della macchina, evidenziando i vari stati e le condizioni di transizione a un livello astratto e senza considerare quindi le variabili in gioco nel programma. Come si può evincere dallo schema, agli stati definiti nella consegna, sono stati aggiunti due ulteriori stati:
-\begin{itemize}
-	\item MAKING COFFEE
-	\item TAKING COFFEE
-\end{itemize}
-Ci siamo presi la libertà di fare ciò perchè abbiamo considerato l'inserimento di questi due stati più esplicativo del funzionamento della macchina e perchè non abbiamo ritenuto che questo rendesse più facile o snaturasse l'intento del compito, ovvero l'apprendimento di utilizzo di un modello a task in un sistema integrato.
-
-\subsection{State Switcher Task}
-\vskip 0.3 cm
-\begin{center}
-\centering { \includegraphics[scale=0.60]{res/pdf/stateswitcher-fsm-crop.pdf} \par }
-\end{center}
-E' di seguito inserito lo schema della FSM relativa al vero e proprio task "State Switcher". La descrizione di questa non si discosta dalla precedente, ma invece mostra le condizioni di transizione da uno stato all'altro tramite le variabili presenti nel programma.
-
-\subsection{Timer Task}
-\vskip 0.3 cm
-\begin{center}
-\centering { \includegraphics[scale=0.65]{res/pdf/timer-fsm-crop.pdf} \par }
-\end{center}
-La FSM del task Timer è molto semplice ma le condizioni di transizione tra i due stati sono varie. Per non appesantire troppo lo schema è stato scelto di non mostrare tutte le condizioni direttamente su questo, ma di inserire al loro posto un "riferimento" ad esse.
 
 \newpage
 
@@ -179,7 +178,14 @@ La FSM del task Timer è molto semplice ma le condizioni di transizione tra i du
 \end{center}
 
 \newpage
+
+%----------------------------------------------------------------------------------------
+%	NOTE PER IL DOCENTE
 %----------------------------------------------------------------------------------------
 
+\section{Note}
+Durante lo sviluppo del progetto si è notato che la "libreria" di comunicazione sulla seriale fornita dal docente non si integrava bene nel progetto, non funzionando. Analizzando il problema ci siamo accorti che seppure la seriale rilevasse un passaggio di informazioni (notato tramite il led montato sulla scheda), alla chiamata della funzione isMsgAvailable() di MsgService, non si riscontrava esisto positivo. Si è cercato di risolvere il problema, ma a causa dello svolgimento di tirocinio e lavoro dei membri del gruppo, non è stato possibile trovare sufficiente tempo da dedicare alla risoluzione, rimanendo quindi in uno stato di non-soluzione. A causa di ciò non è stato quindi possibile testare l'operazione di "refill", che però confidiamo (data l'estrema semplicità della stessa) non avrebbe avuto nessun problema a funzionare.
+
+%----------------------------------------------------------------------------------------
 
 \end{document}

@@ -13,7 +13,7 @@ MakeCoffeeTask::MakeCoffeeTask( GlobalVar_t* gv ) {
 void MakeCoffeeTask::Exec() {
   if ( gv->state == MAKING_COFFEE && l1_state == LOW ) {
     gv->coffee_pods--;
-    gv->msgs.add( new String("Making a coffee" ) );
+    gv->msgs.add( "Making a coffee" );
     l1_state = HIGH;
   }
 
@@ -31,14 +31,11 @@ void MakeCoffeeTask::Exec() {
     l1_state = l2_state = l3_state = LOW;
     gv->time_acquired = true;
     gv->coffee_ready = true;
-    gv->msgs.add( new String( "The coffee is ready" ) );
+    gv->msgs.add( "The coffee is ready" );
   }
 
   digitalWrite( LED1_PIN, l1_state );
   digitalWrite( LED2_PIN, l2_state );
   digitalWrite( LED3_PIN, l3_state );
-
-  if ( gv->coffee_pods == 0 )
-    gv->msgs.add( new String( "No more coffee. Waiting for recharge" ) );
 
 }

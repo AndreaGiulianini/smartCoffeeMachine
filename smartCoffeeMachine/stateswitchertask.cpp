@@ -13,7 +13,6 @@ void StateSwitcherTask::Exec() {
 	*/
 	if ( gv->state == STAND_BY && gv->pir_present ) {
 		gv->state = ON;
-		//Serial.println("STB to ON");
 	}
 
 	/*
@@ -23,7 +22,6 @@ void StateSwitcherTask::Exec() {
 	if ( gv->state == ON && gv->time_elapsed && !gv->time_acquired && !gv->pir_present ) {
 		gv->state = STAND_BY;
 		gv->time_acquired = true;
-		//Serial.println("ON to STB");
 	}
 	/*
 	* Se viene rilevato qualcuno  ad una distanza inferiore a DIST1 cm per un certo 
@@ -32,8 +30,7 @@ void StateSwitcherTask::Exec() {
 	if ( gv->state == ON && gv->time_elapsed && !gv->time_acquired && gv->hc_in_range ) {
 		gv->state = READY;
 		gv->time_acquired = true;
-		gv->msgs.add( new String( "Welcome!" ) );
-		//Serial.println("ON to READY");
+		gv->msgs.add( "Welcome!" );
 	}
 
 	/*
@@ -43,7 +40,6 @@ void StateSwitcherTask::Exec() {
 	if ( gv->state == READY && gv->time_elapsed && !gv->time_acquired && !gv->hc_in_range ) {
 		gv->state = ON;
 		gv->time_acquired = true;
-		//Serial.println("READY to ON");
 	}
 
 	/*
@@ -51,7 +47,6 @@ void StateSwitcherTask::Exec() {
 	*/
 	if ( gv->state == READY && digitalRead(BUTTON_PIN) == HIGH ) {
 		gv->state = MAKING_COFFEE;
-		//Serial.println("READY to MKG");
 	}
 
 	/*
@@ -59,7 +54,6 @@ void StateSwitcherTask::Exec() {
 	*/
 	if ( gv->state == MAKING_COFFEE && gv->coffee_ready ) {
 		gv->state = TAKING_COFFEE;
-		//Serial.println("MKG to TKG");
 	}
 
  /*
@@ -70,8 +64,7 @@ void StateSwitcherTask::Exec() {
        && ( ( gv->time_elapsed && !gv->time_acquired ) || gv->hc_in_range ) ) {
     gv->state = STAND_BY;
     gv->coffee_ready = false;
-    gv->msgs.add( new String( "Coffee taken" ) );
-    //Serial.println("TKG to STB");
+    gv->msgs.add( "Coffee taken" );
   }
 
 	/*
@@ -80,14 +73,15 @@ void StateSwitcherTask::Exec() {
 	if ( gv->state == TAKING_COFFEE 
 	     && ( ( gv->time_elapsed && !gv->time_acquired ) || gv->hc_in_range ) 
 	     && gv->coffee_pods == 0 ) {
+    //gv->msgs.add( "Coffee taken" );
 		gv->state = MAINTENANCE;
     gv->coffee_ready = false;
-    gv->msgs.add( new String( "Coffee taken" ) );
-		//Serial.println("TKG to MAIN");
+    if ( gv->coffee_pods == 0 )
+      gv->msgs.add( "No more coffee. Waiting for recharge" );
 	}
 
 	if ( gv->state == MAINTENANCE && gv->coffee_pods > 0 ) {
 		gv->state = STAND_BY;
-		//Serial.println("MAIN to STB");
+   Serial.println("STDB");
 	}
 }
